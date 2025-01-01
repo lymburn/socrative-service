@@ -2,7 +2,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import { findUserByEmail, createUser, User } from "../models/user";
-import initDb from "../database";
+import { getDbInstance } from "../database";
+import { generateUniqueRoomId } from "../utils"
+import { createRoom, findRoomsByUserId } from "../models/room";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
 
@@ -13,7 +15,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         return res.status(400).json({ error: "Email and password are required" });
     }
 
-    const db = await initDb();
+    const db = await getDbInstance();
 
     try {
         const existingUser = await findUserByEmail(db, email);
@@ -23,12 +25,22 @@ export const register = async (req: Request, res: Response): Promise<any> => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const result = await createUser(db, { email, password: hashedPassword });
-
+        
         // Retrieve the newly created user
         const newUser = await findUserByEmail(db, email);
 
-        if (!newUser) {
+        if (!newUser || !newUser.id) {
             // Handle unexpected case where user creation succeeded but retrieval failed
+            return res.status(500).json({ error: "User registration failed, please try again later." });
+        }
+
+        // Generate a unique room ID for the user
+        const roomId = await generateUniqueRoomId(db, 5);
+        await createRoom(db, roomId, newUser.id);
+        const rooms = await findRoomsByUserId(db, newUser.id);
+
+        if (!rooms) {
+            // Handle unexpected case where room creation succeeded but retrieval failed
             return res.status(500).json({ error: "User registration failed, please try again later." });
         }
 
@@ -37,6 +49,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
             user: {
                 id: newUser.id,
                 email: newUser.email,
+                rooms: rooms
             },
         });
     } catch (error) {
@@ -52,11 +65,11 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         return res.status(400).json({ error: "Email and password are required" });
     }
 
-    const db = await initDb();
+    const db = await getDbInstance();
 
     try {
         const user = await findUserByEmail(db, email);
-        if (!user) {
+        if (!user || !user.id) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
@@ -64,7 +77,8 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         if (!isPasswordValid) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
-
+        
+        const rooms = await findRoomsByUserId(db, user.id);
         const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
 
         res.json({
@@ -72,6 +86,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
             user: {
                 id: user.id,
                 email: user.email,
+                rooms: rooms
             },
         });
     } catch (error) {

@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
-import initDb from "./database";
+import { initializeDb } from "./database";
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ app.use("/auth", authRoutes);
 // Initialize Database and Start Server
 const PORT = process.env.PORT || 3000;
 
-initDb()
+initializeDb()
     .then(() => {
         console.log("Database initialized successfully");
 
