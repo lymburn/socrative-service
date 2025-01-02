@@ -24,20 +24,12 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await createUser(db, { email, password: hashedPassword });
-        
-        // Retrieve the newly created user
-        const newUser = await findUserByEmail(db, email);
-
-        if (!newUser || !newUser.id) {
-            // Handle unexpected case where user creation succeeded but retrieval failed
-            return res.status(500).json({ error: "User registration failed, please try again later." });
-        }
+        const newUserId = await createUser(db, { email, password: hashedPassword });
 
         // Generate a unique room ID for the user
         const roomId = await generateUniqueRoomId(db, 5);
-        await createRoom(db, roomId, newUser.id);
-        const rooms = await findRoomsByUserId(db, newUser.id);
+        await createRoom(db, roomId, newUserId);
+        const rooms = await findRoomsByUserId(db, newUserId);
 
         if (!rooms) {
             // Handle unexpected case where room creation succeeded but retrieval failed
@@ -45,10 +37,9 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         }
 
         res.status(201).json({
-            message: "User registered successfully",
             user: {
-                id: newUser.id,
-                email: newUser.email,
+                id: newUserId,
+                email: email,
                 rooms: rooms
             },
         });
@@ -78,7 +69,6 @@ export const login = async (req: Request, res: Response): Promise<any> => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
         
-        const rooms = await findRoomsByUserId(db, user.id);
         const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
 
         res.json({
@@ -86,7 +76,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
             user: {
                 id: user.id,
                 email: user.email,
-                rooms: rooms
+                rooms: user.rooms
             },
         });
     } catch (error) {

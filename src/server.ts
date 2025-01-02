@@ -2,7 +2,9 @@ import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
+import quizRoutes from "./routes/quizRoutes";
 import { initializeDb } from "./database";
+import authMiddleware from "./middlewares/authMiddleware";
 
 dotenv.config();
 
@@ -22,6 +24,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/quiz", authMiddleware, quizRoutes);
 
 // Initialize Database and Start Server
 const PORT = process.env.PORT || 3000;
