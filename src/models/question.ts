@@ -15,7 +15,10 @@ export const createQuestion = async (
 ): Promise<number> => {
     const { question: questionText, points } = question;
     const result = await db.run(
-        "INSERT INTO questions (quiz_id, question, points) VALUES (?, ?, ?)",
+        `
+        INSERT INTO questions (quiz_id, question, points)
+        VALUES (?, ?, ?)
+        `,
         [quizId, questionText, points]
     );
 

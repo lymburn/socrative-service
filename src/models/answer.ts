@@ -13,7 +13,10 @@ export const createAnswer = async (
 ): Promise<number> => {
     const { text, isCorrect } = answer;
     const result = await db.run(
-        "INSERT INTO answers (question_id, text, is_correct) VALUES (?, ?, ?)",
+        `
+        INSERT INTO answers (question_id, text, is_correct)
+        VALUES (?, ?, ?)
+        `,
         [questionId, text, isCorrect]
     );
 
