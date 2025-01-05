@@ -5,6 +5,7 @@ import { findUserByEmail, createUser, User } from "../models/user";
 import { getDbInstance } from "../database";
 import { generateUniqueRoomId } from "../utils"
 import { createRoom, findRoomsByUserId } from "../models/room";
+import { createStudent, findStudentById } from "../models/student";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
 
@@ -84,3 +85,19 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+export const joinRoom = async (req: Request, res: Response): Promise<void> => {
+    const { name, roomId } = req.body;
+
+    const db = await getDbInstance();
+
+    try {
+        const studentId = await createStudent(db, name, roomId);
+        const createdStudent = findStudentById(db, studentId);
+
+        res.status(201).json({ student: createdStudent });
+    } catch (error) {
+        console.error("Failed to join room:", error);
+        res.status(500).json({ error: "Internal server error." });
+    }
+}

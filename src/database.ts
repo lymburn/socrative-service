@@ -69,8 +69,31 @@ export const initializeDb = async (): Promise<void> => {
             quiz_id INTEGER NOT NULL,
             room_id TEXT NOT NULL,
             is_paused BOOLEAN NOT NULL DEFAULT 0,
-            FOREIGN KEY (quiz_id) REFERENCES quizzes (id) ON DELETE CASCADE,
+            FOREIGN KEY (quiz_id) REFERENCES quizzes (id),
             FOREIGN KEY (room_id) REFERENCES rooms (room_id) ON DELETE CASCADE
         );
     `);
+
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            room_id TEXT NOT NULL,
+            FOREIGN KEY (room_id) REFERENCES rooms (room_id),
+            FOREIGN KEY (room_id) REFERENCES quiz_sessions (room_id) ON DELETE CASCADE
+        );
+    `);
+
+    // await db.exec(`
+    //     CREATE TABLE IF NOT EXISTS student_responses (
+    //         id INTEGER PRIMARY KEY AUTOINCREMENT,
+    //         student_id INTEGER NOT NULL,
+    //         question_id INTEGER NOT NULL,
+    //         answer_id INTEGER,
+    //         FOREIGN KEY (student_id) REFERENCES students (id) ON DELETE CASCADE,
+    //         FOREIGN KEY (question_id) REFERENCES questions (id) ON DELETE CASCADE,
+    //         FOREIGN KEY (answer_id) REFERENCES answers (id) ON DELETE CASCADE,
+    //         UNIQUE (student_id, question_id)
+    //     );
+    // `);
 };

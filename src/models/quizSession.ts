@@ -5,7 +5,6 @@ export interface QuizSession {
     quizId: number;
     roomId: string;
     isPaused: boolean;
-    isActive: boolean;
 }
 
 // Create a new quiz session
@@ -51,13 +50,12 @@ export const findActiveQuizSessionByRoom = async (
             id,
             quiz_id AS quizId,
             room_id AS roomId,
-            is_paused AS isPaused,
-            is_active AS isActive
+            is_paused AS isPaused
         FROM quiz_sessions
-        WHERE room_id = ? AND is_active = 1
+        WHERE room_id = ?
         `,
         [roomId]
-    );;
+    );
 };
 
 // Delete a quiz session by ID
