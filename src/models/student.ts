@@ -31,10 +31,12 @@ export const findStudentById = async (
     db: Database,
     studentId: number
 ): Promise<Student | undefined> => {
-    console.log(studentId);
     return await db.get<Student>(
         `
-        SELECT id, name, room_id
+        SELECT 
+            id,
+            name,
+            room_id AS roomId
         FROM students
         WHERE id = ?
         `,

@@ -93,7 +93,7 @@ export const joinRoom = async (req: Request, res: Response): Promise<void> => {
 
     try {
         const studentId = await createStudent(db, name, roomId);
-        const createdStudent = findStudentById(db, studentId);
+        const createdStudent = await findStudentById(db, studentId);
 
         res.status(201).json({ student: createdStudent });
     } catch (error) {

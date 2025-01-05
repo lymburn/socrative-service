@@ -15,12 +15,7 @@ export const createNewQuiz = async (req: Request, res: Response): Promise<any> =
 
         // Insert questions and answers
         for (const question of quiz.questions) {
-            const { question: questionText, points, answers, correctIndex } = question;
-
-            // Validate question format
-            if (!questionText || typeof points !== "number" || !Array.isArray(answers) || answers.length !== 4) {
-                return res.status(400).json({ error: "Invalid question format" });
-            }
+            const { question: questionText, answers, correctIndex } = question;
 
             // Create the question
             const questionId = await createQuestion(db, quizId, question);

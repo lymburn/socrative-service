@@ -56,7 +56,6 @@ export const findQuizzesByUserId = async (
           
           qs.id AS questionId,
           qs.question AS questionText,
-          qs.points AS questionPoints,
           
           ans.id AS answerId,
           ans.text AS answerText,
@@ -94,7 +93,6 @@ export const findQuizzesByUserId = async (
             question = {
                 id: row.questionId,
                 question: row.questionText,
-                points: row.questionPoints,
                 answers: [],
             };
 
@@ -127,7 +125,6 @@ export const findQuizById = async (
           
           qs.id AS questionId,
           qs.question AS questionText,
-          qs.points AS questionPoints,
           
           ans.id AS answerId,
           ans.text AS answerText,
@@ -155,7 +152,6 @@ export const findQuizById = async (
     const questionMap = new Map<number, {
         id: number;
         question: string;
-        points: number;
         answers: { id: number; text: string; isCorrect: boolean }[];
     }>();
 
@@ -168,7 +164,6 @@ export const findQuizById = async (
             questionMap.set(row.questionId, {
                 id: row.questionId,
                 question: row.questionText,
-                points: row.questionPoints,
                 answers: [],
             });
         }

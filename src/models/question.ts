@@ -4,7 +4,6 @@ import { Answer } from "./answer";
 export interface Question {
     id: number;
     question: string;
-    points: number;
     answers: Answer[];
 }
 
@@ -13,13 +12,13 @@ export const createQuestion = async (
     quizId: number,
     question: Question
 ): Promise<number> => {
-    const { question: questionText, points } = question;
+    const { question: questionText } = question;
     const result = await db.run(
         `
-        INSERT INTO questions (quiz_id, question, points)
+        INSERT INTO questions (quiz_id, question)
         VALUES (?, ?, ?)
         `,
-        [quizId, questionText, points]
+        [quizId, questionText]
     );
 
     if (!result.lastID) {

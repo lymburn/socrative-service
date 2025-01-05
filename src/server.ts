@@ -6,6 +6,7 @@ import quizRoutes from "./routes/quizRoutes";
 import quizSessionRoutes from "./routes/quizSessionRoutes";
 import { initializeDb } from "./database";
 import authMiddleware from "./middlewares/authMiddleware";
+import studentAnswerRoutes from "./routes/studentAnswerRoutes";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(bodyParser.json());
 app.use("/auth", authRoutes);
 app.use("/quiz", authMiddleware, quizRoutes);
 app.use("/quiz-session", authMiddleware, quizSessionRoutes);
+app.use("/student-answer", studentAnswerRoutes);
 
 // Initialize Database and Start Server
 const PORT = process.env.PORT || 3000;

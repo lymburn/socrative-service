@@ -48,7 +48,6 @@ export const initializeDb = async (): Promise<void> => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             quiz_id INTEGER NOT NULL,
             question TEXT NOT NULL,
-            points INTEGER DEFAULT 0,
             FOREIGN KEY (quiz_id) REFERENCES quizzes (id) ON DELETE CASCADE
         );
     `);
@@ -84,16 +83,16 @@ export const initializeDb = async (): Promise<void> => {
         );
     `);
 
-    // await db.exec(`
-    //     CREATE TABLE IF NOT EXISTS student_responses (
-    //         id INTEGER PRIMARY KEY AUTOINCREMENT,
-    //         student_id INTEGER NOT NULL,
-    //         question_id INTEGER NOT NULL,
-    //         answer_id INTEGER,
-    //         FOREIGN KEY (student_id) REFERENCES students (id) ON DELETE CASCADE,
-    //         FOREIGN KEY (question_id) REFERENCES questions (id) ON DELETE CASCADE,
-    //         FOREIGN KEY (answer_id) REFERENCES answers (id) ON DELETE CASCADE,
-    //         UNIQUE (student_id, question_id)
-    //     );
-    // `);
+    await db.exec(`
+        CREATE TABLE IF NOT EXISTS student_answers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER NOT NULL,
+            question_id INTEGER NOT NULL,
+            answer_id INTEGER,
+            FOREIGN KEY (student_id) REFERENCES students (id) ON DELETE CASCADE,
+            FOREIGN KEY (question_id) REFERENCES questions (id) ON DELETE CASCADE,
+            FOREIGN KEY (answer_id) REFERENCES answers (id) ON DELETE CASCADE,
+            UNIQUE (student_id, question_id)
+        );
+    `);
 };
