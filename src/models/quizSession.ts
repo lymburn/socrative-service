@@ -4,7 +4,6 @@ export interface QuizSession {
     id: number;
     quizId: number;
     roomId: string;
-    isPaused: boolean;
 }
 
 // Create a new quiz session
@@ -15,12 +14,12 @@ export const createQuizSession = async (
 ): Promise<number> => {
     const result = await db.run(
         `
-        INSERT INTO quiz_sessions (quiz_id, room_id, is_paused)
+        INSERT INTO quiz_sessions (quiz_id, room_id)
         VALUES (?, ?, 0)
         `,
         [quizId, roomId]
     );
-    
+
     if (!result.lastID) {
         throw new Error("Failed to create quiz session.");
     }
@@ -31,9 +30,14 @@ export const findQuizSessionById = async (
     db: Database,
     sessionId: number
 ): Promise<QuizSession | undefined> => {
-    return await db.get(
+    return await db.get<QuizSession>(
         `
-        SELECT * FROM quiz_sessions WHERE id = ?
+        SELECT 
+            id,
+            quiz_id AS quizId,
+            room_id AS roomId
+        FROM quiz_sessions 
+        WHERE id = ?
         `,
         [sessionId]
     );
@@ -49,8 +53,7 @@ export const findActiveQuizSessionByRoom = async (
         SELECT
             id,
             quiz_id AS quizId,
-            room_id AS roomId,
-            is_paused AS isPaused
+            room_id AS roomId
         FROM quiz_sessions
         WHERE room_id = ?
         `,

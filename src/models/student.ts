@@ -43,3 +43,20 @@ export const findStudentById = async (
         [studentId]
     );
 };
+
+export const findStudentsByRoom = async (
+    db: Database,
+    roomId: string
+): Promise<Student[]> => {
+    return await db.all<Student[]>(
+        `
+        SELECT 
+            id,
+            name,
+            room_id AS roomId
+        FROM students
+        WHERE room_id = ?
+        `,
+        [roomId]
+    );
+};

@@ -67,7 +67,6 @@ export const initializeDb = async (): Promise<void> => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             quiz_id INTEGER NOT NULL,
             room_id TEXT NOT NULL,
-            is_paused BOOLEAN NOT NULL DEFAULT 0,
             FOREIGN KEY (quiz_id) REFERENCES quizzes (id),
             FOREIGN KEY (room_id) REFERENCES rooms (room_id) ON DELETE CASCADE
         );
