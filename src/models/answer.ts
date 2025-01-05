@@ -1,11 +1,17 @@
 import { Database } from "sqlite";
 
+/**
+ * Represents an individual answer option for a question.
+ */
 export interface Answer {
     id: number;
     text: string;
     isCorrect: boolean;
 }
 
+/**
+ * Inserts a new answer record into the database.
+ */
 export const createAnswer = async (
     db: Database,
     questionId: number,

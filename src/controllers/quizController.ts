@@ -1,36 +1,34 @@
 import { Request, Response } from "express";
 import { getDbInstance } from "../database";
-import { createQuiz, deleteQuiz, findQuizzesByUserId, findQuizById } from "../models/quiz";
+import {createQuiz, deleteQuiz, findQuizzesByUserId, findQuizById } from "../models/quiz";
 import { createQuestion } from "../models/question";
 import { createAnswer } from "../models/answer";
 
-// Create a new quiz
-export const createNewQuiz = async (req: Request, res: Response): Promise<any> => {
+/**
+ * Creates a new quiz along with its questions and answers.
+ */
+export const createNewQuiz = async (req: Request, res: Response): Promise<void> => {
     const { quiz } = req.body;
 
     const db = await getDbInstance();
 
     try {
+        // Create the quiz record
         const quizId = await createQuiz(db, quiz);
 
-        // Insert questions and answers
+        // Add questions and answers
         for (const question of quiz.questions) {
-            const { question: questionText, answers, correctIndex } = question;
-
-            // Create the question
             const questionId = await createQuestion(db, quizId, question);
-
-            // Create answers
             for (const answer of question.answers) {
                 await createAnswer(db, questionId, answer);
             }
         }
 
-        // Retrieve created quiz
+        // Retrieve the newly created quiz
         const createdQuiz = await findQuizById(db, quizId);
 
         res.status(201).json({
-            quiz: createdQuiz 
+            quiz: createdQuiz,
         });
     } catch (error) {
         console.error("Failed to create quiz:", error);
@@ -38,42 +36,49 @@ export const createNewQuiz = async (req: Request, res: Response): Promise<any> =
     }
 };
 
-// Get quizzes for a user
-export const getQuizzesForUser = async (req: Request, res: Response): Promise<any> => {
+/**
+ * Retrieves all quizzes for a given user ID.
+ */
+export const getQuizzesForUser = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.query;
 
     const db = await getDbInstance();
 
     try {
         const quizzes = await findQuizzesByUserId(db, Number(userId));
-        res.status(200).json({ 
-            quizzes: quizzes 
-        });
+        res.status(200).json({ quizzes });
     } catch (error) {
         console.error("Failed to retrieve quizzes:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 };
 
-// Get quiz by id
-export const getQuizById = async (req: Request, res: Response): Promise<any> => {
+/**
+ * Retrieves a single quiz by its ID.
+ */
+export const getQuizById = async (req: Request, res: Response): Promise<void> => {
     const { quizId } = req.params;
 
     const db = await getDbInstance();
 
     try {
         const quiz = await findQuizById(db, Number(quizId));
-        res.status(200).json( {
-            quiz: quiz
-        });
+        if (!quiz) {
+            res.status(404).json({ error: "Quiz not found" });
+            return;
+        }
+
+        res.status(200).json({ quiz });
     } catch (error) {
         console.error("Failed to retrieve quiz:", error);
         res.status(500).json({ error: "Internal server error" });
     }
-}
+};
 
-// Delete a quiz by its id
-export const deleteQuizById = async (req: Request, res: Response): Promise<any> => {
+/**
+ * Deletes a quiz by its ID.
+ */
+export const deleteQuizById = async (req: Request, res: Response): Promise<void> => {
     const { quizId } = req.params;
 
     const db = await getDbInstance();

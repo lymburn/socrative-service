@@ -1,12 +1,18 @@
 import { Database } from "sqlite";
 import { Answer } from "./answer";
 
+/**
+ * Represents a quiz question containing multiple possible answers.
+ */
 export interface Question {
     id: number;
     question: string;
     answers: Answer[];
 }
 
+/**
+ * Inserts a new question record into the database.
+ */
 export const createQuestion = async (
     db: Database,
     quizId: number,
@@ -16,7 +22,7 @@ export const createQuestion = async (
     const result = await db.run(
         `
         INSERT INTO questions (quiz_id, question)
-        VALUES (?, ?, ?)
+        VALUES (?, ?)
         `,
         [quizId, questionText]
     );

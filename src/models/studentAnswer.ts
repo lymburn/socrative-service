@@ -1,5 +1,8 @@
 import { Database } from "sqlite";
 
+/**
+ * Stores a student's chosen answer for a specific question.
+ */
 export interface StudentAnswer {
     id?: number;
     studentId: number;
@@ -7,6 +10,9 @@ export interface StudentAnswer {
     answerId: number;
 }
 
+/**
+ * Saves a student's answer.
+ */
 export const createStudentAnswer = async (
     db: Database,
     studentId: number,
@@ -15,9 +21,9 @@ export const createStudentAnswer = async (
 ): Promise<number> => {
     const result = await db.run(
         `
-        INSERT INTO student_answers (student_id, question_id, answer_id)
-        VALUES (?, ?, ?);
-        `,
+    INSERT INTO student_answers (student_id, question_id, answer_id)
+    VALUES (?, ?, ?)
+    `,
         [studentId, questionId, answerId]
     );
 
@@ -28,20 +34,23 @@ export const createStudentAnswer = async (
     return result.lastID;
 };
 
+/**
+ * Retrieves all answers submitted by a student.
+ */
 export const findStudentAnswersByStudentId = async (
     db: Database,
     studentId: number
 ): Promise<StudentAnswer[]> => {
-    return await db.all<StudentAnswer[]>(
+    return db.all<StudentAnswer[]>(
         `
-        SELECT 
-            id,
-            student_id AS studentId,
-            question_id AS questionId,
-            answer_id AS answerId
-        FROM student_answers 
-        WHERE student_id = ?;
-        `,
+    SELECT 
+      id,
+      student_id AS studentId,
+      question_id AS questionId,
+      answer_id AS answerId
+    FROM student_answers
+    WHERE student_id = ?
+    `,
         [studentId]
     );
 };

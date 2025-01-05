@@ -1,6 +1,9 @@
 import { Database } from "sqlite";
 import { Question } from "./question";
 
+/**
+ * Represents a quiz that can contain multiple questions.
+ */
 export interface Quiz {
     id: number;
     name: string;
@@ -9,16 +12,16 @@ export interface Quiz {
     questions: Question[];
 }
 
-export const createQuiz = async (
-    db: Database,
-    quiz: Quiz
-): Promise<number> => {
+/**
+ * Inserts a new quiz record into the database.
+ */
+export const createQuiz = async (db: Database, quiz: Quiz): Promise<number> => {
     const { name, userId } = quiz;
     const result = await db.run(
         `
-        INSERT INTO quizzes (name, user_id)
-        VALUES (?, ?)
-        `,
+    INSERT INTO quizzes (name, user_id)
+    VALUES (?, ?)
+    `,
         [name, userId]
     );
 
@@ -29,43 +32,45 @@ export const createQuiz = async (
     return result.lastID;
 };
 
-export const deleteQuiz = async (
-    db: Database,
-    quizId: number
-): Promise<void> => {
+/**
+ * Deletes a quiz by its ID.
+ */
+export const deleteQuiz = async (db: Database, quizId: number): Promise<void> => {
     await db.run(
         `
-        DELETE FROM quizzes
-        WHERE id = ?
-        `,
+    DELETE FROM quizzes
+    WHERE id = ?
+    `,
         [quizId]
     );
 };
 
+/**
+ * Finds all quizzes for a particular user, including their questions and answers.
+ */
 export const findQuizzesByUserId = async (
     db: Database,
     userId: number
 ): Promise<Quiz[]> => {
-    const rows = await db.all(
+    const rows = await db.all<any[]>(
         `
-        SELECT
-          qz.id AS quizId,
-          qz.name AS quizName,
-          qz.date_created AS quizDateCreated,
-          qz.user_id AS quizUserId,
-          
-          qs.id AS questionId,
-          qs.question AS questionText,
-          
-          ans.id AS answerId,
-          ans.text AS answerText,
-          ans.is_correct AS answerIsCorrect
-    
-        FROM quizzes qz
-        LEFT JOIN questions qs ON qz.id = qs.quiz_id
-        LEFT JOIN answers ans ON qs.id = ans.question_id
-        WHERE qz.user_id = ?
-        `,
+    SELECT
+      qz.id AS quizId,
+      qz.name AS quizName,
+      qz.date_created AS quizDateCreated,
+      qz.user_id AS quizUserId,
+      
+      qs.id AS questionId,
+      qs.question AS questionText,
+      
+      ans.id AS answerId,
+      ans.text AS answerText,
+      ans.is_correct AS answerIsCorrect
+    FROM quizzes qz
+    LEFT JOIN questions qs ON qz.id = qs.quiz_id
+    LEFT JOIN answers ans ON qs.id = ans.question_id
+    WHERE qz.user_id = ?
+    `,
         [userId]
     );
 
@@ -84,6 +89,7 @@ export const findQuizzesByUserId = async (
 
         const currentQuiz = quizMap.get(row.quizId)!;
 
+        // If there's no questionId, skip building a question object
         if (!row.questionId) {
             return;
         }
@@ -95,7 +101,6 @@ export const findQuizzesByUserId = async (
                 question: row.questionText,
                 answers: [],
             };
-
             currentQuiz.questions.push(question);
         }
 
@@ -111,30 +116,32 @@ export const findQuizzesByUserId = async (
     return Array.from(quizMap.values());
 };
 
+/**
+ * Finds a single quiz by its ID, including questions and answers.
+ */
 export const findQuizById = async (
     db: Database,
     quizId: number
 ): Promise<Quiz | undefined> => {
-    const rows = await db.all(
+    const rows = await db.all<any[]>(
         `
-        SELECT
-          qz.id AS quizId,
-          qz.name AS quizName,
-          qz.date_created AS quizDateCreated,
-          qz.user_id AS quizUserId,
-          
-          qs.id AS questionId,
-          qs.question AS questionText,
-          
-          ans.id AS answerId,
-          ans.text AS answerText,
-          ans.is_correct AS answerIsCorrect
+    SELECT
+      qz.id AS quizId,
+      qz.name AS quizName,
+      qz.date_created AS quizDateCreated,
+      qz.user_id AS quizUserId,
       
-        FROM quizzes qz
-        LEFT JOIN questions qs ON qz.id = qs.quiz_id
-        LEFT JOIN answers ans ON qs.id = ans.question_id
-        WHERE qz.id = ?
-        `,
+      qs.id AS questionId,
+      qs.question AS questionText,
+      
+      ans.id AS answerId,
+      ans.text AS answerText,
+      ans.is_correct AS answerIsCorrect
+    FROM quizzes qz
+    LEFT JOIN questions qs ON qz.id = qs.quiz_id
+    LEFT JOIN answers ans ON qs.id = ans.question_id
+    WHERE qz.id = ?
+    `,
         [quizId]
     );
 
@@ -142,18 +149,12 @@ export const findQuizById = async (
         return undefined;
     }
 
-    const {
-        quizId: qId,
-        quizName,
-        quizDateCreated,
-        quizUserId
-    } = rows[0];
+    const { quizId: qId, quizName, quizDateCreated, quizUserId } = rows[0];
 
-    const questionMap = new Map<number, {
-        id: number;
-        question: string;
-        answers: { id: number; text: string; isCorrect: boolean }[];
-    }>();
+    const questionMap = new Map<
+        number,
+        { id: number; question: string; answers: { id: number; text: string; isCorrect: boolean }[] }
+    >();
 
     rows.forEach((row) => {
         if (!row.questionId) {
