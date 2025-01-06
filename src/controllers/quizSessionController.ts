@@ -84,7 +84,7 @@ export const getActiveSessionByRoom = async (req: Request, res: Response): Promi
  * Retrieves a quiz session by its ID.
  */
 export const getSessionById = async (req: Request, res: Response): Promise<void> => {
-    const { sessionId } = req.query;
+    const { sessionId } = req.params;
 
     const db = await getDbInstance();
 

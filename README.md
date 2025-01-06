@@ -21,216 +21,65 @@ This project is a “clone” of the Socrative backend, built using Express.js a
 
 ## Endpoints
 
-### Authentication
+## Authentication Routes
 
-**`POST /auth/register`**  
-   - **Purpose**: Register a new user with an email and password.  
-   - **Input**:
-     ```json
-     {
-       "email": "user@example.com",
-       "password": "securepassword"
-     }
-     ```
-   - **Response**:
-     - **201 Created**:
-       ```json
-       {
-         "user": {
-           "id": 1,
-           "email": "user@example.com",
-           "rooms": [
-             {
-               "roomId": "ABCDE",
-               "userId": 1
-             }
-           ]
-         }
-       }
-       ```
-     - **400 Bad Request**:
-       ```json
-       {
-         "error": "Email already exists"
-       }
-       ```
+**`POST /auth/register`**
+   - **Purpose**: Register a new user.
+   - **Description**: Creates a new user account and automatically generates a unique room for the user.
 
-**`POST /auth/login`**  
-   - **Purpose**: Authenticate a user and return a JWT token for secure access.  
-   - **Input**:
-     ```json
-     {
-       "email": "user@example.com",
-       "password": "securepassword"
-     }
-     ```
-   - **Response**:
-     - **200 OK**:
-       ```json
-       {
-         "token": "jwt_token_here",
-         "user": {
-           "id": 1,
-           "email": "user@example.com",
-           "rooms": [
-             {
-               "roomId": "ABCDE",
-               "userId": 1
-             }
-           ]
-         }
-       }
-       ```
-     - **401 Unauthorized**:
-       ```json
-       {
-         "error": "Invalid credentials"
-       }
-       ```
+**`POST /auth/login/teacher`**
+   - **Purpose**: Log in a teacher and receive a JWT token.
+   - **Description**: Authenticates a teacher using their email and password, returning a JWT token for authorized access.
 
-### Quizzes
+**`POST /auth/login/student`**
+   - **Purpose**: Allow a student to join a room.
+   - **Description**: Enables a student to join a specific room by providing their name and the room ID.
 
-**`GET /quiz/:quizId`**  
-   - **Purpose**: Retrieve details of a specific quiz by its ID.  
-   - **Input**: URL parameter `quizId=<quizId>`  
-   - **Response**:
-     - **200 OK**:
-       ```json
-       {
-         "quiz": {
-           "id": 1,
-           "name": "Sample Quiz",
-           "dateCreated": "2025-01-01T12:00:00Z",
-           "userId": 1,
-           "questions": [
-             {
-               "id": 1,
-               "question": "What is 2 + 2?",
-               "answers": [
-                 {
-                   "id": 1,
-                   "text": "3",
-                   "isCorrect": false
-                 },
-                 {
-                   "id": 2,
-                   "text": "4",
-                   "isCorrect": true
-                 },
-                 {
-                   "id": 3,
-                   "text": "5",
-                   "isCorrect": true
-                 },
-                 {
-                   "id": 4,
-                   "text": "6",
-                   "isCorrect": true
-                 }
-               ]
-             }
-           ]
-         }
-       }
-       ```
-     - **404 Not Found**:
-       ```json
-       {
-         "error": "Quiz not found"
-       }
-       ```
 
-**`DELETE /quiz/:quizId`**  
-   - **Purpose**: Delete a specific quiz by its ID.  
-   - **Input**: URL parameter `quizId=<quizId>`  
-   - **Response**:
-     - **204 No Content**
-     - **404 Not Found**:
-       ```json
-       {
-         "error": "Quiz not found"
-       }
-       ```
+## Quizzes Routes
 
-### Quiz Sessions
+**`POST /quiz`**
+   - **Purpose**: Create a new quiz.
+   - **Description**: Allows a teacher to create a new quiz along with its associated questions and answers.
 
-**`GET /quiz-session/:sessionId`**  
-   - **Purpose**: Retrieve details of a specific quiz session by its ID.  
-   - **Input**: URL parameter `sessionId=<sessionId>`  
-   - **Response**:
-     - **200 OK**:
-       ```json
-       {
-         "session": {
-           "id": 1,
-           "quizId": 1,
-           "roomId": "ABCDE",
-           "isActive": true
-         }
-       }
-       ```
-     - **404 Not Found**:
-       ```json
-       {
-         "error": "Session not found"
-       }
-       ```
+**`GET /quiz?userId=:userId`**
+   - **Purpose**: Retrieve all quizzes for a specific user.
+   - **Description**: Fetches all quizzes created by a particular user based on the provided user ID.
 
-**`GET /quiz-session/results/:sessionId`**  
-   - **Purpose**: Fetch results of a quiz session, including student responses.  
-   - **Input**: URL parameter `sessionId=<sessionId>`  
-   - **Response**:
-     - **200 OK**:
-       ```json
-       {
-         "quizSessionResult": {
-           "quiz": {
-             "id": 1,
-             "name": "Sample Quiz",
-             "dateCreated": "2025-01-01T12:00:00Z",
-             "userId": 1,
-             "questions": [
-               {
-                 "id": 1,
-                 "question": "What is 2 + 2?",
-                 "answers": [
-                   {
-                     "id": 1,
-                     "text": "3",
-                     "isCorrect": false
-                   },
-                   {
-                     "id": 2,
-                     "text": "4",
-                     "isCorrect": true
-                   }
-                 ]
-               }
-             ]
-           },
-           "studentResults": [
-             {
-               "student": {
-                 "id": 1,
-                 "name": "John Doe",
-                 "roomId": "ABCDE"
-               },
-               "studentAnswers": [
-                 {
-                   "id": 1,
-                   "studentId": 1,
-                   "questionId": 1,
-                   "answerId": 2
-                 }
-               ]
-             }
-           ]
-         }
-       }
-       ```
-     - **404 Not Found**:
-       ```json
-       {
-         "error": "Session not found"
-       }
-       ```
+**`GET /quiz/:quizId`**
+   - **Purpose**: Retrieve details of a specific quiz by its ID.
+   - **Description**: Provides comprehensive details of a quiz, including its questions and answers, based on the quiz ID.
+
+**`DELETE /quiz/:quizId`**
+   - **Purpose**: Delete a specific quiz by its ID.
+   - **Description**: Removes a quiz from the database using its unique identifier.
+
+
+## Quiz Sessions Routes
+
+**`POST /quiz-session`**
+   - **Purpose**: Launch a new quiz session.
+   - **Description**: Initiates a new session for a specified quiz within a particular room.
+
+**`GET /quiz-session?roomId=:roomId`**
+   - **Purpose**: Retrieve the active quiz session for a given room.
+   - **Description**: Fetches the currently active quiz session associated with a specific room ID.
+
+**`DELETE /quiz-session/:sessionId`**
+   - **Purpose**: End a quiz session.
+   - **Description**: Terminates an ongoing quiz session using its unique session ID.
+
+**`GET /quiz-session/:sessionId/results/`**
+   - **Purpose**: Fetch results of a quiz session.
+   - **Description**: Retrieves the outcomes of a completed quiz session, including student responses and scores.
+
+
+## Student Answers Routes
+
+**`POST /student-answer`**
+   - **Purpose**: Submit a student's answer to a specific question.
+   - **Description**: Allows a student to submit their answer for a particular question within a quiz session.
+
+**`GET /student-answer/:studentId`**
+   - **Purpose**: Retrieve all answers submitted by a specific student.
+   - **Description**: Fetches all the answers that a student has submitted across different quiz sessions.
