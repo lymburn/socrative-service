@@ -19,8 +19,8 @@ export const createQuizSession = async (
 ): Promise<number> => {
     const result = await db.run(
         `
-    INSERT INTO quiz_sessions (quiz_id, room_id, is_active)
-    VALUES (?, ?, 0)
+    INSERT INTO quiz_sessions (quiz_id, room_id)
+    VALUES (?, ?)
     `,
         [quizId, roomId]
     );

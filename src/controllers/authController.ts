@@ -38,7 +38,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
         if (!rooms) {
             // In case room creation succeeded but retrieval failed
-            res.sendStatus(500).json({ error: "User registration failed, please try again later." });
+            res.status(500).json({ error: "User registration failed, please try again later." });
+            return;
         }
 
         res.status(201).json({
@@ -75,7 +76,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            res.sendStatus(401).json({ error: "Invalid credentials" });
+            res.status(401).json({ error: "Invalid credentials" });
+            return
         }
 
         const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {

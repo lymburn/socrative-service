@@ -41,7 +41,7 @@ export const findUserByEmail = async (
     // Fetch the rooms for this user
     const roomRows = await db.all<any[]>(
         `
-    SELECT id, room_id, user_id
+    SELECT room_id, user_id
     FROM rooms
     WHERE user_id = ?
     `,

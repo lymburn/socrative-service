@@ -21,7 +21,7 @@ export const createNewQuizSession = async (req: Request, res: Response): Promise
 
         const room = await findRoomByRoomId(db, roomId);
         if (!room) {
-            res.sendStatus(404).json({ error: "Room not found." });
+            res.status(404).json({ error: "Room not found." });
             return;
         }
 
@@ -46,7 +46,7 @@ export const deleteQuizSession = async (req: Request, res: Response): Promise<vo
     try {
         const session = await findQuizSessionById(db, Number(sessionId));
         if (!session) {
-            res.sendStatus(404).json({ error: "Quiz session not found." });
+            res.status(404).json({ error: "Quiz session not found." });
             return;
         }
 
@@ -69,7 +69,7 @@ export const getActiveSessionByRoom = async (req: Request, res: Response): Promi
     try {
         const session = await findActiveQuizSessionByRoom(db, String(roomId));
         if (!session) {
-            res.sendStatus(404).json({ error: "No active session found for this room." });
+            res.status(404).json({ error: "No active session found for this room." });
             return;
         }
 
@@ -91,7 +91,7 @@ export const getSessionById = async (req: Request, res: Response): Promise<void>
     try {
         const session = await findQuizSessionById(db, Number(sessionId));
         if (!session) {
-            res.sendStatus(404).json({ error: "No session found" });
+            res.status(404).json({ error: "No session found" });
             return;
         }
 
@@ -113,7 +113,7 @@ export const getQuizSessionResults = async (req: Request, res: Response): Promis
     try {
         const results = await buildQuizSessionResult(db, Number(sessionId));
         if (!results) {
-            res.sendStatus(404).json({ error: `Quiz session with ID ${sessionId} not found.` });
+            res.status(404).json({ error: `Quiz session with ID ${sessionId} not found.` });
             return;
         }
 

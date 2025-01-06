@@ -14,7 +14,12 @@ const app = express();
 var cors = require('cors');
 
 // Enable CORS
-app.use(cors());
+app.use(
+    cors({
+        origin: 'http://localhost:5173', // Allow only this origin
+        credentials: true, // Allow cookies or other credentials
+    })
+);
 
 app.use(bodyParser.json());
 
