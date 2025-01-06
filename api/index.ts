@@ -1,12 +1,12 @@
 import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import authRoutes from "./routes/authRoutes";
-import quizRoutes from "./routes/quizRoutes";
-import quizSessionRoutes from "./routes/quizSessionRoutes";
-import { initializeDb } from "./database";
-import { authMiddleware } from "./middlewares/authMiddleware";
-import studentAnswerRoutes from "./routes/studentAnswerRoutes";
+import authRoutes from "../src/routes/authRoutes";
+import quizRoutes from "../src/routes/quizRoutes";
+import quizSessionRoutes from "../src/routes/quizSessionRoutes";
+import { initializeDb } from "../src/database";
+import { authMiddleware } from "../src/middlewares/authMiddleware";
+import studentAnswerRoutes from "../src/routes/studentAnswerRoutes";
 
 dotenv.config();
 
