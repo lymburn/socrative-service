@@ -12,7 +12,11 @@ export const getDbInstance = async (): Promise<Database> => {
             filename: "./database.sqlite",
             driver: sqlite3.Database,
         });
+
+        // Enable foreign key constraints
+        await dbInstance.exec("PRAGMA foreign_keys = ON;");
     }
+          
     return dbInstance;
 };
 
@@ -82,8 +86,9 @@ export const initializeDb = async (): Promise<void> => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       room_id TEXT NOT NULL,
+      session_id INTEGER NOT NULL,
       FOREIGN KEY (room_id) REFERENCES rooms (room_id),
-      FOREIGN KEY (room_id) REFERENCES quiz_sessions (room_id) ON DELETE CASCADE
+      FOREIGN KEY (session_id) REFERENCES quiz_sessions (id) ON DELETE CASCADE
     );
   `);
 

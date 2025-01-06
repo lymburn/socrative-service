@@ -102,12 +102,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
  * Allows a student to join a room by providing their name and room ID.
  */
 export const joinRoom = async (req: Request, res: Response): Promise<void> => {
-    const { name, roomId } = req.body;
+    const { name, roomId, sessionId } = req.body;
 
     const db = await getDbInstance();
 
     try {
-        const studentId = await createStudent(db, name, roomId);
+        const studentId = await createStudent(db, name, roomId, Number(sessionId));
         const createdStudent = await findStudentById(db, studentId);
 
         res.status(201).json({ student: createdStudent });

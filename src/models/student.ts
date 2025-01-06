@@ -7,6 +7,7 @@ export interface Student {
     id: number;
     name: string;
     roomId: string;
+    sessionId: number;
 }
 
 /**
@@ -15,14 +16,15 @@ export interface Student {
 export const createStudent = async (
     db: Database,
     name: string,
-    roomId: string
+    roomId: string,
+    sessionId: number
 ): Promise<number> => {
     const result = await db.run(
         `
-    INSERT INTO students (name, room_id)
-    VALUES (?, ?)
+    INSERT INTO students (name, room_id, session_id)
+    VALUES (?, ?, ?)
     `,
-        [name, roomId]
+        [name, roomId, sessionId]
     );
 
     if (!result.lastID) {
@@ -44,7 +46,8 @@ export const findStudentById = async (
     SELECT 
       id,
       name,
-      room_id AS roomId
+      room_id AS roomId,
+      session_id AS sessionId
     FROM students
     WHERE id = ?
     `,
@@ -64,7 +67,8 @@ export const findStudentsByRoom = async (
     SELECT 
       id,
       name,
-      room_id AS roomId
+      room_id AS roomId,
+      session_id AS sessionId
     FROM students
     WHERE room_id = ?
     `,
