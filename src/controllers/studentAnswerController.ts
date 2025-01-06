@@ -31,7 +31,7 @@ export const getStudentAnswers = async (req: Request, res: Response): Promise<vo
 
     try {
         const studentAnswers = await findStudentAnswersByStudentId(db, Number(studentId));
-        res.status(200).json({ studentAnswers });
+        res.status(200).json({ studentAnswers: studentAnswers });
     } catch (error) {
         console.error("Failed to fetch student answers:", error);
         res.status(500).json({ error: "Internal server error." });

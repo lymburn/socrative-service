@@ -73,7 +73,7 @@ export const getActiveSessionByRoom = async (req: Request, res: Response): Promi
             return;
         }
 
-        res.status(200).json({ session });
+        res.status(200).json({ session: session });
     } catch (error) {
         console.error("Failed to retrieve active session:", error);
         res.status(500).json({ error: "Internal server error." });
@@ -95,7 +95,7 @@ export const getSessionById = async (req: Request, res: Response): Promise<void>
             return;
         }
 
-        res.status(200).json({ session });
+        res.status(200).json({ session: session });
     } catch (error) {
         console.error("Failed to retrieve session:", error);
         res.status(500).json({ error: "Internal server error." });

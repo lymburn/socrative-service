@@ -46,7 +46,7 @@ export const getQuizzesForUser = async (req: Request, res: Response): Promise<vo
 
     try {
         const quizzes = await findQuizzesByUserId(db, Number(userId));
-        res.status(200).json({ quizzes });
+        res.status(200).json({ quizzes: quizzes });
     } catch (error) {
         console.error("Failed to retrieve quizzes:", error);
         res.status(500).json({ error: "Internal server error" });
@@ -68,7 +68,7 @@ export const getQuizById = async (req: Request, res: Response): Promise<void> =>
             return;
         }
 
-        res.status(200).json({ quiz });
+        res.status(200).json({ quiz: quiz });
     } catch (error) {
         console.error("Failed to retrieve quiz:", error);
         res.status(500).json({ error: "Internal server error" });
