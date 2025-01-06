@@ -1,6 +1,14 @@
 # Socrative Service
 
-This project is a “clone” of the Socrative backend, built using Express.js and TypeScript to showcase my ability and enthusiasm for learning new and relevant technologies. I opted for SQLite with raw SQL for data storage to keep the implementation straightforward. While I recognize that the code may not adhere to all best practices and isn’t production-ready, this was my first time working with Node.js, and it has been a valuable learning experience. I hope this project demonstrates my commitment to learning and how I would able to quickly ramp up on the Socrative team.
+This project is a “clone” of the Socrative backend, built using Express.js and TypeScript to showcase my ability and enthusiasm for learning new and relevant technologies. I opted for SQLite with raw SQL for data storage to keep the implementation straightforward. There is a very basic level of authentication using JWT. While I recognize that the code may not adhere to all best practices and isn’t production-ready, this was my first time working with Node.js, and it has been a valuable learning experience. I hope this project demonstrates my commitment to learning and how I would able to quickly ramp up on the Socrative team.
+
+Some potential improvements with more time could include:
+- Switching to a robust database like PostgreSQL.
+- Using an ORM instead of raw SQL.
+- Adding unit tests and improving error handling.
+- Implementing WebSockets for real-time live results.
+- Adding environment-specific configurations for deployment.
+- Enhancing security practices.
 
 ## Installation
 
@@ -10,13 +18,13 @@ This project is a “clone” of the Socrative backend, built using Express.js a
 2. **Install dependencies**  
    `npm install`
 
-3. **Add environment variables in .env**
+3. **Add environment variables in .env**  
     ```
-    PORT=5000
+    PORT=3000
     JWT_SECRET=your_secret_key
     ```
 
-4. **Start the service**
+4. **Start the service**  
     `npx ts-node src/index.ts`
 
 ## Endpoints
